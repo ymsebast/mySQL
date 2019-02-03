@@ -47,17 +47,18 @@ function subtractStock(id, newamount,amount) {
             connection.query('UPDATE products SET product_sales = ? WHERE item_id = ?', [sale, id], function (error3, results3, fields) {
                 if (error2) throw error2;
                 console.log(results3)
+                read();
             });
         });
-        read();
+     
     })
 }
 function checkStock(id, amount) {
-    connection.query('SELECT stock_quantity,product_name FROM products WHERE item_id = ?', [id], function (error, results, fields) {
+    connection.query('SELECT stock_quantity,product_name,price FROM products WHERE item_id = ?', [id], function (error, results, fields) {
         if (error) throw error;
         console.log(results);
         if (amount > results[0].stock_quantity) {
-            console.log(`There are only ${amount} ${results[0].product_name} left.`);
+            console.log(`There are only ${results[0].stock_quantity} ${results[0].product_name} left.`);
         }
         else {
             var newamount = results[0].stock_quantity - amount;
@@ -67,11 +68,12 @@ function checkStock(id, amount) {
                     {
                         type: "confirm",
                         name: "confirm",
-                        message: `Would you like to buy ${amount} ${results[0].product_name}?`
+                        message: `Would you like to buy ${amount} ${results[0].product_name} for $${amount * results[0].price}?`
                     }
                 ])
                 .then(function (answers) {
                     subtractStock(id, newamount,amount);
+                 
                 })
         }
     });
